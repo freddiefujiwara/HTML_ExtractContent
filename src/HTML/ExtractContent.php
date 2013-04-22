@@ -20,4 +20,14 @@ class ExtractContent
     public function html(){
         return $this -> __html;
     }
+
+    private function __stripTags($html){
+        $str = preg_replace('/<.+?>/', '', $html); 
+        $str = mb_convert_kana($str, 'asK'); 
+        return htmlspecialchars_decode($str);
+    }
+
+    public function title(){
+        return preg_match('/<title[^>]*>\s*(.*?)\s*<\/title\s*>/i', $this -> __html, $matches) ? $this -> __stripTags($matches[1]) : "";
+    }
 }
