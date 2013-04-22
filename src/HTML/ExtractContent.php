@@ -12,9 +12,15 @@ namespace HTML;
 
 class ExtractContent
 {
+    private $__originalHtml = "";
     private $__html = "";
     public function __construct($html){
-        $this -> __html = $html;
+        $this -> __originalHtml = $html;
+        $this -> __html         = $html;
+    }
+
+    public function originalHtml(){
+        return $this -> __originalHtml;
     }
 
     public function html(){
@@ -29,5 +35,18 @@ class ExtractContent
 
     public function title(){
         return preg_match('/<title[^>]*>\s*(.*?)\s*<\/title\s*>/i', $this -> __html, $matches) ? $this -> __stripTags($matches[1]) : "";
+    }
+
+    public function eliminateGoogleAdSectionIgnore(){
+        $this -> __html = 
+            preg_replace('/<!--\s*google_ad_section_start\(weight=ignore\)\s*-->.*?<!--\s*google_ad_section_end.*?-->/ms', '', $this -> __html);
+    }
+
+    public function extractGoogleAdSection(){
+        if (preg_match('/<!--\s*google_ad_section_start[^>]*-->/', $this -> __html)) { 
+            preg_match_all('/<!--\s*google_ad_section_start[^>]*-->.*?<!--\s*google_ad_section_end.*?-->/ms', $this -> __html, $matches); 
+            return implode("\n", $matches[0]); 
+        }
+        return $this -> __html;
     }
 }
